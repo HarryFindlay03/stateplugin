@@ -1,0 +1,6 @@
+
+*.dylib
+*.o
+test
+
+.vscode/
