@@ -3,6 +3,25 @@
 
 
 /* state_pass IMPLEMENTATION */
+
+state_pass::state_pass(gcc::context *ctx)
+: gimple_opt_pass(statetool_pass_data, ctx)
+{
+    // init features
+    features["num_ops"] = 0;
+    features["mem_refs"] = 0;
+    // ...
+
+    if(features.size() != NUM_FEATURES)
+    {
+        std::cerr << "number of features does not match number of features in features map, please update.\n";
+        std::exit(-1);
+    }
+
+    return;
+}
+
+
 unsigned int state_pass::execute(function *fun)
 {
     basic_block bb;
@@ -15,9 +34,14 @@ unsigned int state_pass::execute(function *fun)
         for(gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi))
         {
             gimple* g = gsi_stmt(gsi);
-            std::cerr << "Test!\n";
+
+            features["num_ops"] += g->num_ops;
+            features["mem_refs"] += (1 ? gimple_references_memory_p(g) : 0);
         }
     }
+
+    // todo write features to file
+    print_map(features);
 
     return 0;
 }

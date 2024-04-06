@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdio.h>
+#include <map>
+#include <string>
 
 #include "gcc-plugin.h"
 #include "plugin-version.h"
@@ -10,6 +12,9 @@
 
 #include "gimple.h"
 #include "gimple-iterator.h"
+
+
+#define NUM_FEATURES (int)2
 
 
 /* must export this symbol */
@@ -39,9 +44,20 @@ const pass_data statetool_pass_data =
 /* state_pass DEF */
 struct state_pass : gimple_opt_pass
 {
-    state_pass(gcc::context *ctx) : gimple_opt_pass(statetool_pass_data, ctx) {}
+    std::map<std::string, size_t> features;// warn overflow possibility
+
+    state_pass(gcc::context *ctx);
 
     virtual unsigned int execute(function *fun) override;
 
     virtual state_pass *clone() override { return this; }
 };
+
+/* help for debug */
+inline void print_map(const std::map<std::string, size_t>& m)
+{
+    for(const auto& [k, v] : m)
+        std::cout << '[' << k << "] = " << v << '\n';
+    
+    return;
+}

@@ -4,8 +4,8 @@
 
 # g++ -I`gcc -print-file-name=plugin`/include -I/opt/homebrew/opt/gmp/include -fPIC -shared -fno-rtti -O2 statetool.cc -o statetool.so
 
-HOST_GCC=g++-13
-TARGET_GCC=gcc-13
+HOST_GCC=g++
+TARGET_GCC=gcc
 PLUGIN_SOURCE_FILES= statetool.cc
 GCCPLUGINS_DIR:= $(shell $(TARGET_GCC) -print-file-name=plugin)
 EXTRA_DIR= /opt/homebrew/opt/gmp/include
