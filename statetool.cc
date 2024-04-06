@@ -1,58 +1,29 @@
-#include <iostream>
-#include <stdio.h>
-
-#include "gcc-plugin.h"
-#include "plugin-version.h"
-
-#include "tree-pass.h"
-#include "context.h"
-#include "tree.h"
-
-/* must export this symbol */
-int plugin_is_GPL_compatible;
+#include "statetool.h"
 
 
-struct plugin_gcc_version statetool_ver = 
+
+/* state_pass IMPLEMENTATION */
+unsigned int state_pass::execute(function *fun)
 {
-    .basever = "13.2.0"
-};
+    basic_block bb;
 
-namespace
-{
-    const pass_data statetool_pass_data = 
+    FOR_EACH_BB_FN(bb, fun)
     {
-        GIMPLE_PASS, /* pass type */
-        "statetool", /* name */
-        OPTGROUP_NONE, /* optinfo_flags */
-        TV_NONE, /* tv_id */
-        PROP_gimple_any, /* properties required */
-        0, /* properties provided */
-        0, /* properties destroyed */
-        0, /* todo_flags_start */
-        0 /* todo_flags_finish */
-    };
+        /* sequence iterator for basic block */
+        gimple_stmt_iterator gsi;
 
-    struct state_pass : gimple_opt_pass
-    {
-        state_pass(gcc::context *ctx) : gimple_opt_pass(statetool_pass_data, ctx) {}
-
-        virtual unsigned int execute(function *fun) override
+        for(gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi))
         {
-            basic_block bb;
-
-            FOR_EACH_BB_FN(bb, fun)
-            {
-                std::cerr << "Hello! \n";
-            }
-
-            return 0;
+            gimple* g = gsi_stmt(gsi);
+            std::cerr << "Test!\n";
         }
+    }
 
-        virtual state_pass *clone() override { return this; }
-    };
+    return 0;
 }
 
-/* plugin entry point */
+
+/* PLUGIN ENTRY POINT */
 int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gcc_version *version)
 {
     /* version check */
