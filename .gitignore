@@ -1,6 +1,6 @@
-
 *.dylib
 *.o
+*.txt
 test
 
 .vscode/
