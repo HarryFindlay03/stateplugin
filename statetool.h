@@ -24,6 +24,7 @@
 #include "tree.h" //required for gimple definitions
 #include "tree-pass.h"
 #include "context.h"
+#include "pass_manager.h"
 
 #include "gimple.h"
 #include "gimple-iterator.h"

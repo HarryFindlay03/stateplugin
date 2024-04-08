@@ -35,7 +35,7 @@ std::vector<std::string> feat_vec =
 
 
 state_pass::state_pass(gcc::context *ctx, const std::string& filename)
-: filename(filename), gimple_opt_pass(statetool_pass_data, ctx)
+: gimple_opt_pass(statetool_pass_data, ctx), filename(filename)
 {
     // init features
     for(auto v : feat_vec)
@@ -159,15 +159,20 @@ int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gcc_version 
     }
 
     /* registering custom pass */
+        // help here on placing pass https://github.com/gcc-mirror/gcc/blob/278cad85077509b73b1faf32d36f3889c2a5524b/gcc/passes.cc#L1373
+        // also check pass_manager.h
+
     struct register_pass_info pass_info;
 
     pass_info.pass = new state_pass(g, (std::string)plugin_info->argv[0].value);
-    pass_info.reference_pass_name = "cfg"; // register pass after cfg, this needs to change ???
-    pass_info.ref_pass_instance_number = 1;
+    pass_info.reference_pass_name = "ssa"; // register pass after cfg, this needs to change ???
+    pass_info.ref_pass_instance_number = 0;
     pass_info.pos_op = PASS_POS_INSERT_AFTER;
 
     register_callback(plugin_info->base_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &pass_info);
 
+    // output - internal compiler error - report bug
+    // g->get_passes()->dump_passes();
 
     return 0;
 }
