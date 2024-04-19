@@ -30,8 +30,8 @@ CXXFLAGS+= -I$(GCCPLUGINS_DIR)/include -I$(EXTRA_DIR) -fPIC -fno-rtti -O2 -Wall 
 all: build
 
 
-statetool.dylib: $(PLUGIN_SOURCE_FILES)
-	$(HOST_GCC) $(CXXFLAGS) -undefined dynamic_lookup -dynamiclib $^ -o $@
+statetool: $(PLUGIN_SOURCE_FILES)
+	$(HOST_GCC) $(CXXFLAGS) -undefined dynamic_lookup -dynamiclib $^ -o $@.dylib
 
 
 check: 

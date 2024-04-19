@@ -17,17 +17,12 @@
 std::vector<std::string> feat_vec = 
 {
     "cond",
-    "goto",
     "label",
-    "switch",
     "assign",
-    "asm",
     "call",
-    "transaction",
     "return",
-    "bind",
-    "phi",
-    "nop"
+    "ops",
+    "memrefs"
 };
 
 
@@ -43,7 +38,7 @@ state_pass::state_pass(gcc::context *ctx, const std::string& filename)
 
     if(features.size() != NUM_FEATURES)
     {
-        std::cerr << "number of features does not match number of features in features map, please update.\n";
+        std::cerr << "statetool.h: number of features does not match number of features in features map, please update.\n";
         std::exit(-1);
     }
 
@@ -75,49 +70,34 @@ unsigned int state_pass::execute(function *fun)
 /* GIMPLE ANALYSIS FUNCTIONS */
 
 
-void gimple_analyser(std::map<std::string, size_t>& feat, const gimple* g_stmt)
+void gimple_analyser(std::map<std::string, size_t>& feat, gimple* g_stmt)
 {
     switch(g_stmt->code)
     {
         case GIMPLE_COND:
             feat["cond"] += 1;
             break;
-        case GIMPLE_GOTO:
-            feat["goto"] += 1;
-            break;
         case GIMPLE_LABEL:
             feat["label"] += 1;
-            break;
-        case GIMPLE_SWITCH:
-            feat["switch"] += 1;
             break;
         case GIMPLE_ASSIGN:
             feat["assign"] += 1;
             break;
-        case GIMPLE_ASM:
-            feat["asm"] += 1;
-            break;
         case GIMPLE_CALL:
             feat["call"] += 1;
-            break;
-        case GIMPLE_TRANSACTION:
-            feat["transaction"] += 1;
             break;
         case GIMPLE_RETURN:
             feat["return"] += 1;
             break;
-        case GIMPLE_BIND:
-            feat["bind"] += 1;
-            break;
-        case GIMPLE_PHI:
-            feat["phi"] += 1;
-            break;
-        case GIMPLE_NOP:
-            feat["nop"] += 1;
-            break;
         default:
             break;
     }
+
+    // number of operands in statement
+    feat["ops"] += g_stmt->num_ops;
+
+    // number of memory refs
+    feat["memrefs"] += ((gimple_references_memory_p(g_stmt)) ? 1 : 0);
 
     return;
 }

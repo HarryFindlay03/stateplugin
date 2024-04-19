@@ -30,7 +30,7 @@
 #include "gimple-iterator.h"
 
 
-#define NUM_FEATURES (int)12
+#define NUM_FEATURES (int)7
 
 
 /* must export this symbol */
@@ -72,7 +72,7 @@ struct state_pass : gimple_opt_pass
 
 
 /* gimple state analysis */
-void gimple_analyser(std::map<std::string, size_t>& feat, const gimple* g_stmt);
+void gimple_analyser(std::map<std::string, size_t>& feat, gimple* g_stmt);
 
 void file_writer(const std::string& filename, const std::map<std::string, size_t>& m);
 
