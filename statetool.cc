@@ -139,20 +139,21 @@ int plugin_init(struct plugin_name_args *plugin_info, struct plugin_gcc_version 
     }
 
     /* registering custom pass */
-        // help here on placing pass https://github.com/gcc-mirror/gcc/blob/278cad85077509b73b1faf32d36f3889c2a5524b/gcc/passes.cc#L1373
-        // also check pass_manager.h
+    // help here on placing pass https://github.com/gcc-mirror/gcc/blob/b0469e35dbcc9a93a2cb50e3c0445edc3db174be/gcc/pass_manager.h#L47
+    // global context g defined in context.h has a public pass_manager*, 
+    // we want our analyser to run after all of the middle optimisations have taken place.
 
+    /* hence, getting reference pass information as all_passes*/
+    opt_pass* ref_pass = g->get_passes()->all_passes;
+
+    /* registering custom pass*/
     struct register_pass_info pass_info;
-
     pass_info.pass = new state_pass(g, (std::string)plugin_info->argv[0].value);
-    pass_info.reference_pass_name = "ssa"; // register pass after cfg, this needs to change ???
-    pass_info.ref_pass_instance_number = 0;
+    pass_info.reference_pass_name = ref_pass->name;
+    pass_info.ref_pass_instance_number = ref_pass->static_pass_number;
     pass_info.pos_op = PASS_POS_INSERT_AFTER;
 
     register_callback(plugin_info->base_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &pass_info);
-
-    // output - internal compiler error - report bug
-    // g->get_passes()->dump_passes();
 
     return 0;
 }
